@@ -1,0 +1,6 @@
+# Never upload your secret API key
+.env
+
+# Python junk files, safe to ignore
+__pycache__/
+*.pyc

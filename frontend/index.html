@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Performance Predictor</title>
+<style>
+  :root {
+    --ink: #1f2937;
+    --paper: #f6f4ee;
+    --card: #ffffff;
+    --accent: #2f5d50;
+    --accent-soft: #e4ede9;
+    --border: #ded8c8;
+    --muted: #6b7280;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Georgia", serif;
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .kicker {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 32px;
+    max-width: 46ch;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+  }
+
+  .field {
+    margin-bottom: 22px;
+  }
+
+  .field:last-of-type {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  input[type="number"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .toggle-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .toggle-row button {
+    flex: 1;
+    padding: 10px 12px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .toggle-row button[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .predict-btn {
+    margin-top: 32px;
+    width: 100%;
+    padding: 14px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .predict-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .result {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    display: none;
+  }
+
+  .result.visible { display: block; }
+  .result.error { background: #fbe9e7; border-color: #e8b4ac; }
+
+  .result-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .result-value {
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: "Iowan Old Style", "Georgia", serif;
+  }
+
+  .result.error .result-value {
+    color: #b3261e;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .status {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="kicker">Score prediction tool</div>
+  <h1>Student Performance Predictor</h1>
+  <p class="subtitle">Enter a student's habits below to estimate their performance index, based on the trained model.</p>
+
+  <div class="card">
+    <div class="field">
+      <label for="hours">Hours Studied (per day)</label>
+      <input type="number" id="hours" value="6" min="0" max="24" step="0.5">
+    </div>
+
+    <div class="field">
+      <label for="previous">Previous Scores</label>
+      <input type="number" id="previous" value="75" min="0" max="100">
+    </div>
+
+    <div class="field">
+      <label>Extracurricular Activities</label>
+      <div class="toggle-row" role="group" aria-label="Extracurricular activities">
+        <button type="button" id="extraYes" aria-pressed="true">Yes</button>
+        <button type="button" id="extraNo" aria-pressed="false">No</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sleep">Sleep Hours (per night)</label>
+      <input type="number" id="sleep" value="7" min="0" max="24" step="0.5">
+    </div>
+
+    <div class="field">
+      <label for="papers">Sample Question Papers Practiced</label>
+      <input type="number" id="papers" value="4" min="0" max="50">
+    </div>
+
+    <button class="predict-btn" id="predictBtn">Predict Score</button>
+
+    <div class="result" id="result">
+      <div class="result-label">Predicted Performance Index</div>
+      <div class="result-value" id="resultValue">--</div>
+    </div>
+  </div>
+
+  <p class="status" id="status"></p>
+</div>
+
+<script>
+  // Change this if your backend runs somewhere other than your own computer.
+  const API_URL = "http://localhost:8000";
+
+  const hoursEl = document.getElementById("hours");
+  const previousEl = document.getElementById("previous");
+  const sleepEl = document.getElementById("sleep");
+  const papersEl = document.getElementById("papers");
+  const extraYesBtn = document.getElementById("extraYes");
+  const extraNoBtn = document.getElementById("extraNo");
+  const predictBtn = document.getElementById("predictBtn");
+  const resultBox = document.getElementById("result");
+  const resultValue = document.getElementById("resultValue");
+  const statusEl = document.getElementById("status");
+
+  let extracurricular = "Yes";
+
+  extraYesBtn.addEventListener("click", () => {
+    extracurricular = "Yes";
+    extraYesBtn.setAttribute("aria-pressed", "true");
+    extraNoBtn.setAttribute("aria-pressed", "false");
+  });
+
+  extraNoBtn.addEventListener("click", () => {
+    extracurricular = "No";
+    extraNoBtn.setAttribute("aria-pressed", "true");
+    extraYesBtn.setAttribute("aria-pressed", "false");
+  });
+
+  async function checkBackend() {
+    try {
+      const res = await fetch(`${API_URL}/health`);
+      const data = await res.json();
+      statusEl.textContent = data.model_ready
+        ? "Backend connected. Model is ready."
+        : "Backend connected. Model is still training...";
+    } catch (err) {
+      statusEl.textContent = "Can't reach the backend. Make sure it's running on " + API_URL;
+    }
+  }
+
+  async function predict() {
+    predictBtn.disabled = true;
+    predictBtn.textContent = "Predicting...";
+    resultBox.classList.remove("visible", "error");
+
+    const payload = {
+      hours_studied: parseFloat(hoursEl.value),
+      previous_scores: parseFloat(previousEl.value),
+      extracurricular_activities: extracurricular,
+      sleep_hours: parseFloat(sleepEl.value),
+      sample_question_papers_practiced: parseFloat(papersEl.value),
+    };
+
+    try {
+      const res = await fetch(`${API_URL}/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `Request failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      resultValue.textContent = data.predicted_performance_index;
+      resultBox.classList.add("visible");
+    } catch (err) {
+      resultValue.textContent = err.message;
+      resultBox.classList.add("visible", "error");
+    } finally {
+      predictBtn.disabled = false;
+      predictBtn.textContent = "Predict Score";
+    }
+  }
+
+  predictBtn.addEventListener("click", predict);
+  checkBackend();
+</script>
+
+</body>
+</html>
